@@ -951,7 +951,7 @@
               introOverlay.style.pointerEvents = "none";
               setTimeout(showStageTwo, 400);
             }
-            setTimeout(proceed, readingDelay(headline));
+            setTimeout(proceed, readingDelay(headline) + 1000);
           } else {
             setTimeout(showStageTwo, 100);
           }
