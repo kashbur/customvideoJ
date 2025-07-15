@@ -593,7 +593,8 @@
         const finalHeartIcon = heartIcons[finalHeartIndex];
         const audioContext = new (window.AudioContext ||
           window.webkitAudioContext)();
-
+const clickAudio = new Audio("img/slotpullsound.mp3");
+        clickAudio.preload = "auto";
         // Apply custom fonts
         const loadedFonts = new Set();
         function loadFont(param) {
@@ -677,22 +678,8 @@
         // Spin button interactions
         function playClickSound() {
           try {
-            if (audioContext.state === "suspended") {
-              audioContext.resume();
-            }
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-            oscillator.type = "sine";
-            oscillator.frequency.setValueAtTime(210, audioContext.currentTime);
-            gainNode.gain.setValueAtTime(0.14, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(
-              0.001,
-              audioContext.currentTime + 0.14,
-            );
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-            oscillator.start();
-            oscillator.stop(audioContext.currentTime + 0.14);
+           clickAudio.currentTime = 0;
+            clickAudio.play();
           } catch (e) {}
         }
 
