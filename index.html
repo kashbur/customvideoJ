@@ -1090,6 +1090,29 @@
           }, 8000);
         }
         window.addEventListener("resize", refitAllLines);
+
+        // Allow the spacebar to spin the reels on desktop
+        let spaceDown = false;
+        document.addEventListener("keydown", function (e) {
+          if (
+            (e.code === "Space" || e.key === " " || e.key === "Spacebar") &&
+            !spaceDown
+          ) {
+            e.preventDefault();
+            spaceDown = true;
+            spinButton.classList.add("pressed");
+            if (navigator.vibrate) navigator.vibrate(24);
+            playClickSound();
+          }
+        });
+        document.addEventListener("keyup", function (e) {
+          if (e.code === "Space" || e.key === " " || e.key === "Spacebar") {
+            e.preventDefault();
+            spinButton.classList.remove("pressed");
+            if (spaceDown) handleSpin();
+            spaceDown = false;
+          }
+        });
       });
     </script>
   </body>
