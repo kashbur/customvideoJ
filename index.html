@@ -489,13 +489,6 @@
           ];
 
         const heartIcons = ["img/blue%20heart.png", "img/pink%20heart.png"];
-        const babyIcons = [
-          "img/5.png",
-          "img/6.png",
-          "img/7.png",
-          "img/8.png",
-          "img/9.png",
-        ];
 
         const container = document.querySelector(".slot-machine-container");
         const minHeightPct = Math.min(...slotData.map((s) => s.hPct));
@@ -513,9 +506,8 @@
         // visible even while the reels spin. Removing these extra elements keeps
         // only the dynamic reel contents.
 
-        function getRandomIcon(row) {
-          const pool = row === 2 ? heartIcons : babyIcons;
-          return pool[Math.floor(Math.random() * pool.length)];
+        function getRandomIcon() {
+          return heartIcons[Math.floor(Math.random() * heartIcons.length)];
         }
 
         function createSingleIcon(icon) {
@@ -536,7 +528,7 @@
             const item = document.createElement("div");
             item.className = "reel-item";
             const img = document.createElement("img");
-            img.src = getRandomIcon(row);
+            img.src = getRandomIcon();
             img.alt = "Slot Icon";
             img.className = "slot-icon";
             item.appendChild(img);
@@ -546,13 +538,9 @@
         }
 
         let spinCount = 0;
-        let currentSymbols = Array.from({ length: slotData.length }, (_, i) =>
-          getRandomIcon(slotData[i].row)
+        let currentSymbols = Array.from({ length: slotData.length }, () =>
+          getRandomIcon()
         );
-        // Override with specific icons for the initial layout
-        currentSymbols[0] = "img/5.png";
-        currentSymbols[1] = "img/6.png";
-        currentSymbols[2] = "img/7.png";
         const slotMachine = document.getElementById("slotMachine");
         const spinButton = document.getElementById("spinButton");
         const reels = slotData.map((_, i) => document.getElementById(`reel${i + 1}`));
@@ -588,22 +576,10 @@
           "instructionsOverlay",
         );
         const params = getParams();
-        const finalHeartParam = params.finalheart;
-        const finalHeartIndex = /^(0|blue)$/i.test(finalHeartParam || "")
-          ? 0
-          : /^(1|pink)$/i.test(finalHeartParam || "")
-            ? 1
-            : 1;
+        const finalHeartIndex = 0;
+        const hasNonHeartParams = Object.keys(params).length > 0;
 
-        const hasNonHeartParams = Object.keys(params).some(
-          (k) => k.toLowerCase() !== "finalheart",
-        );
-
-        // Default overlay color based on the final heart when no color is supplied
-        if (!params.color && finalHeartParam) {
-          if (/^(0|blue)$/i.test(finalHeartParam)) params.color = "blue";
-          else if (/^(1|pink)$/i.test(finalHeartParam)) params.color = "pink";
-        }
+        if (!params.color) params.color = "blue";
 
         if (finalHeartIndex === 0 && !hasNonHeartParams) {
           params.main = "IT’S A BOY!";
@@ -769,7 +745,6 @@
                   baseDuration,
                   finalHeartIcon,
                   cb,
-                  slotData[i].row,
                 );
               });
             });
@@ -784,7 +759,6 @@
                   baseDuration,
                   currentSymbols[i],
                   null,
-                  slotData[i].row,
                 );
               });
             });
@@ -810,19 +784,19 @@
             return false;
           }
           do {
-            currentSymbols = Array.from({ length: reels.length }, (_, i) =>
-              getRandomIcon(slotData[i].row)
+            currentSymbols = Array.from({ length: reels.length }, () =>
+              getRandomIcon()
             );
           } while (
             currentSymbols.every((s) => s === currentSymbols[0]) ||
             (spinCount < 4 && hasMatchingRow(currentSymbols))
           );
         }
-        function spinReel(reel, delay, duration, finalIcon, callback, row) {
+        function spinReel(reel, delay, duration, finalIcon, callback) {
           setTimeout(() => {
             const strip = reel.strip;
             Array.from(strip.querySelectorAll("img")).forEach((img) => {
-              img.src = getRandomIcon(row);
+              img.src = getRandomIcon();
             });
             reel.finalWrapper.style.display = "none";
             strip.style.display = "flex";
@@ -830,7 +804,7 @@
             setTimeout(() => {
               strip.classList.remove("spinning");
               strip.style.display = "none";
-              reel.finalImg.src = finalIcon || getRandomIcon(row);
+              reel.finalImg.src = finalIcon || getRandomIcon();
               reel.finalWrapper.style.display = "flex";
               if (callback) callback();
             }, duration);
